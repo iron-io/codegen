@@ -33,6 +33,7 @@ samples/client/petstore/android-java/hello.txt
 samples/client/petstore/objc/Build
 samples/client/petstore/objc/Pods
 samples/server/petstore/nodejs/node_modules
+samples/
 target
 .idea
 .lib
