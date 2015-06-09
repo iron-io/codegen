@@ -7,7 +7,7 @@ import java.io.File;
 import java.util.*;
 
 public class PythonClientCodegen extends DefaultCodegen implements CodegenConfig {
-  protected String module = "SwaggerPetstore";
+  protected String module = "iron";
   protected String invokerPackage;
   protected String eggPackage;
 
