@@ -1,0 +1,9 @@
+{
+
+  "dependencies": {
+    "grunt": "~0.4.2",
+    "grunt-swagger-js-codegen": "0.4.1",
+    "swagger-js-codegen": "1.1.3"
+  }
+
+}
