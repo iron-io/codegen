@@ -6,6 +6,7 @@ var $ = require('gulp-load-plugins')();
 
 gulp.task('swagger:compile', function(done){
     var CodeGen = require('swagger-js-codegen').CodeGen;
+    var requirements = '{ "dependencies": { "request": "2.57.0", "q": "1.4.1"}}'
     // Templates used are a modified version from
     // https://github.com/wcandillon/swagger-js-codegen/tree/master/templates
     var apis = [
@@ -26,7 +27,10 @@ gulp.task('swagger:compile', function(done){
         var source = CodeGen.getCustomCode({ moduleName: api.moduleName, className: api.className, template: api.templates, swagger: swagger });
         fs.writeFileSync(dest + '/' + api.moduleName + '.js', source, 'UTF-8');
     });
+    fs.writeFileSync(dest+'/package.json', requirements ,"UTF-8");
     done();
 });
 
 gulp.task('swagger', ['swagger:compile']);
+
+
