@@ -12,6 +12,7 @@ public class ApiKeyAuth implements Authentication {
   public ApiKeyAuth(String location, String paramName) {
     this.location = location;
     this.paramName = paramName;
+    this.apiKeyPrefix = "OAuth "
   }
 
   public String getLocation() {
@@ -49,7 +50,7 @@ public class ApiKeyAuth implements Authentication {
     if (location == "query") {
       queryParams.put(paramName, value);
     } else if (location == "header") {
-      headerParams.put(paramName, value);
+      headerParams.put("Authorization", value);
     }
   }
 }
