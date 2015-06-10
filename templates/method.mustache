@@ -25,7 +25,7 @@
         if (this.token.isQuery) {
             queryParameters[this.token.headerOrQueryName] = this.token.value;
         } else if (this.token.headerOrQueryName) {
-            headers[Authorization] = 'OAuth ' + this.token.value;
+            headers['Authorization'] = 'OAuth ' + this.token.value;
         } else {
             headers['Authorization'] = 'OAuth ' + this.token.value;
         }
