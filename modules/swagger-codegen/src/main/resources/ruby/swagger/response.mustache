@@ -7,7 +7,6 @@ module {{moduleName}}
 
       def initialize(raw)
         self.raw = raw
-
         case self.code
         when 500..510 then raise(ServerError, self.error_message)
         when 299..426 then raise(ClientError, self.error_message)
@@ -20,7 +19,7 @@ module {{moduleName}}
 
       # Account for error messages that take different forms...
       def error_message
-        body['message']
+        body['msg']
       rescue
         body
       end
