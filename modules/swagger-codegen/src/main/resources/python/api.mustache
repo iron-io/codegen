@@ -92,7 +92,7 @@ class {{classname}}(object):
         body_params = None
         {{#bodyParam}}
         if '{{paramName}}' in params:
-            body_params = params['{{paramName}}']
+          body_params = { '{{paramName}}': params['{{paramName}}'] }
         {{/bodyParam}}
         # HTTP header `Accept`
         header_params['Accept'] = self.api_client.select_header_accept([{{#produces}}'{{mediaType}}'{{#hasMore}}, {{/hasMore}}{{/produces}}])

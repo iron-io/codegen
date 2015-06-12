@@ -34,6 +34,13 @@ module {{moduleName}}
       end
       {{/vars}}
     end
+
+    # http://stackoverflow.com/questions/5030553/ruby-convert-object-to-hash
+    def to_h
+      hash = {}
+      instance_variables.each {|var| hash[var.to_s.delete("@")] = instance_variable_get(var) }
+      hash
+    end
   end
 {{/model}}
 {{/models}}
