@@ -70,7 +70,7 @@
 
         {{#isBodyParameter}}
             if(parameters['{{&camelCaseName}}'] !== undefined){
-                body = parameters['{{&camelCaseName}}'];
+                body = JSON.stringify(parameters['{{&camelCaseName}}']);
             }
         {{/isBodyParameter}}
 
