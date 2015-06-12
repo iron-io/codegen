@@ -72,6 +72,7 @@
             if(parameters['{{&camelCaseName}}'] !== undefined){
                 body = JSON.stringify(parameters['{{&camelCaseName}}']);
             }
+            headers['Content-Type'] = 'application/json';
         {{/isBodyParameter}}
 
          {{#isFormParameter}}
