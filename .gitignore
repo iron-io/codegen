@@ -14,6 +14,7 @@ generated-code/*
 *.swo
 
 /target
+/node_modules
 /generated-files
 /nbactions.xml
 *.pyc
@@ -40,5 +41,6 @@ target
 atlassian-ide-plugin.xml
 .DS_Store
 
+ironmqV3.json
 samples/client/petstore/php/SwaggerClient-php/composer.lock
 samples/client/petstore/php/SwaggerClient-php/vendor/
