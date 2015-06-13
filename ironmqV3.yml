@@ -1,0 +1,1048 @@
+swagger: '2.0'
+
+# This is your document metadata
+info:
+  version: "0.0.2"
+  title: IronMQ v3
+
+schemes:
+  - https
+
+host: "mq-aws-us-east-1-1.iron.io"
+basePath: /3/projects
+
+consumes:
+  - application/json
+produces:
+  - application/json
+tags:
+  - name: IronMQ
+    description: Iron.io queue service
+
+securityDefinitions:
+  oauth_token:
+    type: apiKey
+    name: Authorization
+    in: header
+
+paths:
+  /{project_id}/queues:
+    get:
+      operationId: getQueues
+      tags:
+        - IronMQ
+      description: Get a list of all queues in a project in alphabetical order
+      security:
+        - oauth_token: []
+      parameters:
+        - name: project_id
+          in: path
+          description: The project that the queues belong to
+          required: true
+          type: string
+        - name: per_page
+          in: query
+          required: false
+          description: Number of elements returned per request
+          type: integer
+          default: 30
+        - name: previous
+          in: query
+          required: false
+          description: >
+            If previous is empty, the list will return from the beginning.
+            Other wise, it will start on the next queue after previous
+          type: string
+        - name: prefix
+          in: query
+          required: false
+          description: List queues starting with a certain prefix
+          type: string
+      responses:
+        200:
+          description: A list of queues
+          schema:
+            $ref: "#/definitions/QueueList"
+        404:
+          description: Error getting queues
+
+  /{project_id}/queues/{queue_name}:
+    get:
+      operationId: getQueueByName
+      tags:
+        - IronMQ
+      description: Get a queue's info
+      security:
+        - oauth_token: []
+      parameters:
+        - name: project_id
+          in: path
+          description: The project that the queues belong to
+          required: true
+          type: string
+        - name: queue_name
+          in: path
+          description: Name of the queue
+          required: true
+          type: string
+      responses:
+        200:
+          description: Queue information
+          schema:
+            $ref: "#/definitions/QueueDataResponse"
+        404:
+          description: There was an issue getting the queue's info
+    put:
+      operationId: putNewQueue
+      tags:
+        - IronMQ
+      description: Create a new queue
+      security:
+        - oauth_token: []
+      parameters:
+        - name: project_id
+          in: path
+          description: The project that the new queue will belong to.
+          required: true
+          type: string
+        - name: queue_name
+          in: path
+          description: Name of the new queue.
+          required: true
+          type: string
+        - name: queue
+          in: body
+          description: "All fields are optional."
+          schema:
+            $ref: "#/definitions/QueueInfo"
+      responses:
+        201:
+          description: Queue was successfully created.
+          schema:
+            $ref: "#/definitions/QueueInfo"
+
+    patch:
+      operationId: updateQueue
+      tags:
+        - IronMQ
+      description: Update a queue's information.
+      security:
+        - oauth_token: []
+      parameters:
+        - name: project_id
+          in: path
+          description: The project that the queues belong to
+          required: true
+          type: string
+        - name: queue_name
+          in: path
+          description: Name of the queue
+          required: true
+          type: string
+        - name: queue
+          in: body
+          description: "The queue's options to be changed. Some fields will not be included if they are not applicable, such as push if it's not a push queue or alerts if there are no alerts"
+          schema:
+            $ref: "#/definitions/QueueInfo"
+      responses:
+        200:
+          description: The queue has been successfully
+          schema:
+            $ref: "#/definitions/QueueInfo"
+        404:
+          description: Error updating the queue. An error can be raised when you try to set subscribers or alerts on a pull queue
+    delete:
+      operationId: deleteQueue
+      tags:
+        - IronMQ
+      description: Delete a queue
+      security:
+        - oauth_token: []
+      parameters:
+        - name: project_id
+          in: path
+          description: The project that the queue belongs to
+          required: true
+          type: string
+        - name: queue_name
+          in: path
+          description: Name of queue to be deleted
+          required: true
+          type: string
+      responses:
+        200:
+          description: Queue has been successfully deleted
+          schema:
+            $ref: "#/definitions/ResponseMessage"
+        404:
+          description: There was an error deleting the queue
+
+  /{project_id}/queues/{queue_name}/reservations:
+    post:
+      operationId: reserveMessages
+      tags:
+        - IronMQ
+      description: Reserve n amounts of messages from a queue
+      security:
+        - oauth_token: []
+      parameters:
+        - name: project_id
+          in: path
+          description: The project that the queue belongs to
+          required: true
+          type: string
+        - name: queue_name
+          in: path
+          description: Name of the queue
+          required: true
+          type: string
+        - name: options
+          in: body
+          description: |
+            n: The maximum number of messages to get. Default is 1. Maximum is 100. Note: You may not receive all n messages on every request, the more sparse the queue, the less likely you are to receive all n messages.
+            timeout: After timeout (in seconds), item will be placed back onto queue. You must delete the message from the queue to ensure it does not go back onto the queue. If not set, value from queue is used. Default is 60 seconds, minimum is 30 seconds, and maximum is 86,400 seconds (24 hours).
+            wait: Time to long poll for messages, in seconds. Max is 30 seconds. Default 0.
+            delete: swagger
+          schema:
+            $ref: "#/definitions/ReservationRequest"
+      responses:
+        200:
+          description: Returns a list of reserved messages. An empty array will be returned if there are no messages available in the queue
+          schema:
+            $ref: "#/definitions/ReservationResponse"
+        404:
+          description: There was an issue getting the queue's info
+          schema:
+            $ref: "#/definitions/ResponseMessage"
+
+  /{project_id}/queues/{queue_name}/webhook:
+    post:
+      operationId: postWebhook
+      tags:
+        - IronMQ
+      description: Send a message to the webhook endpoint
+      security:
+        - oauth_token: []
+      parameters:
+        - name: project_id
+          in: path
+          description: The project that the queues belong to
+          required: true
+          type: string
+        - name: queue_name
+          in: path
+          description: Name of the queue
+          required: true
+          type: string
+      responses:
+        200:
+          description: asdf
+        404:
+          description: adsf
+  /{project_id}/queues/{queue_name}/subscribers:
+    post:
+      operationId: postSubscribers
+      tags:
+        - IronMQ
+      description: Add a new subscriber to a push queue or update an existing subscriber
+      security:
+        - oauth_token: []
+      parameters:
+        - name: project_id
+          in: path
+          description: The project that the queues belong to
+          required: true
+          type: string
+        - name: queue_name
+          in: path
+          description: Name of the push queue.
+          required: true
+          type: string
+        - name: subscribers
+          in: body
+          description: A list of subscribers to be added or updated.
+          required: true
+          schema:
+            $ref: "#/definitions/SubscriberList"
+      responses:
+        200:
+          description: Successfully added the subscribers to the queue.
+          schema:
+            $ref: "#/definitions/ResponseMessage"
+        404:
+          description: There was an issue adding the subscribers.
+          schema:
+            $ref: "#/definitions/ResponseMessage"
+    put:
+      operationId: putSubscribers
+      tags:
+        - IronMQ
+      description: >
+        Replaces the current subscribers on a push queue with a new list of subscribers
+        Older subscribers will be removed.
+      security:
+        - oauth_token: []
+      parameters:
+        - name: project_id
+          in: path
+          description: The project that the queues belong to.
+          required: true
+          type: string
+        - name: queue_name
+          in: path
+          description: Name of the push queue.
+          type: string
+          required: true
+        - name: subscribers
+          in: body
+          description: A list of subscribers that will be replacing the current list.
+          required: true
+          schema:
+            $ref: "#/definitions/SubscriberList"
+
+      responses:
+        200:
+          description: Successfully replaced subscribers
+          schema:
+            $ref: "#/definitions/ResponseMessage"
+        404:
+          description: There was an error updating the subscriber list
+          schema:
+            $ref: "#/definitions/ResponseMessage"
+    delete:
+      operationId: deleteSubscribers
+      tags:
+        - IronMQ
+      description: Remove one or multiple subscribers from a push queue.
+      security:
+        - oauth_token: []
+      parameters:
+        - name: project_id
+          in: path
+          description: The project that the queues belong to
+          required: true
+          type: string
+        - name: queue_name
+          in: path
+          description: Name of the push queue
+          required: true
+          type: string
+        - name: subscribers
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/SubscriberList"
+      responses:
+        200:
+          description: Successfully removed subscribers
+          schema:
+            $ref: "#/definitions/ResponseMessage"
+        404:
+          description: Error removing subscribers
+          schema:
+            $ref: "#/definitions/ResponseMessage"
+  /{project_id}/queues/{queue_name}/alerts:
+    post:
+      operationId: addAlert
+      tags:
+        - IronMQ
+      description: Add an alert to a queue. Only available for pull queues.
+      security:
+        - oauth_token: []
+      parameters:
+        - name: project_id
+          in: path
+          description: The project that the queues belong to
+          required: true
+          type: string
+        - name: queue_name
+          in: path
+          description: Name of the pull queue
+          type: string
+          required: true
+        - name: alerts
+          in: body
+          description: Set of alerts
+          schema:
+            $ref: "#/definitions/AlertList"
+      responses:
+        200:
+          description: Successfully added an alert to the queue
+    put:
+      operationId: putAlerts
+      tags:
+        - IronMQ
+      description: Replaces the existing alerts with a new list. Only available for pull queues.
+      security:
+        - oauth_token: []
+      parameters:
+        - name: project_id
+          in: path
+          description: The project that the queues belong to
+          required: true
+          type: string
+        - name: queue_name
+          in: path
+          description: Name of the pull queue
+          type: string
+          required: true
+        - name: alerts
+          in: body
+          description: Set of alerts
+          schema:
+            $ref: "#/definitions/AlertList"
+      responses:
+        200:
+          description: Successfully replaced alerts
+    delete:
+      operationId: deleteAlerts
+      tags:
+        - IronMQ
+      description: Delete a batch of alerts from a queue. Only available for pull queues.
+      security:
+        - oauth_token: []
+      parameters:
+        - name: project_id
+          in: path
+          description: The project that the queues belong to
+          required: true
+          type: string
+        - name: queue_name
+          in: path
+          description: Name of the pull queue
+          type: string
+          required: true
+        - name: alerts
+          in: body
+          description: Set of alert IDs to be deleted
+          schema:
+            $ref: "#/definitions/AlertList"
+      responses:
+        200:
+          description: Successfully removed alerts
+        404:
+          description: Error removing the queue.
+  /{project_id}/queues/{queue_name}/alerts/{alert_id}:
+    delete:
+      operationId: deleteAlertById
+      tags:
+        - IronMQ
+      description: Delete a single alert from a queue using its ID. Only available for pull queues.
+      security:
+        - oauth_token: []
+      parameters:
+        - name: project_id
+          in: path
+          description: The project that the pull queue belongs to.
+          required: true
+          type: string
+        - name: queue_name
+          in: path
+          description: The name of the pull queue
+          type: string
+          required: true
+        - name: alert_id
+          in: path
+          description: ID of the alert to be deleted
+          type: string
+          required: true
+      responses:
+        200:
+          description: Successfully deleted
+        404:
+          description: There was an issue deleting the alert.
+
+  /{project_id}/queues/{queue_name}/messages:
+    get:
+      operationId: getMessages
+      tags:
+        - IronMQ
+      description: Peek messages on a queue
+      security:
+        - oauth_token: []
+      parameters:
+        - name: project_id
+          in: path
+          description: The project that the queue belongs to
+          type: string
+          required: true
+        - name: queue_name
+          in: path
+          required: true
+          type: string
+          description: The name of the queue that you want to peek from
+        - name: options
+          in: body
+          schema:
+            $ref: "#/definitions/MessagesRequest"
+      responses:
+        200:
+          description: Successfully peeked off the queue. Some fields will not be included if they are not applicable like push if it's not a push queue and alerts if there are no alerts.
+          schema:
+            $ref: "#/definitions/MessageList"
+        404:
+          description: There was an error peeking off the queue
+    post:
+      operationId: addMessages
+      tags:
+        - IronMQ
+      description: Add a set of messages to a single queue. Multiple messages may be added in a single request, provided that the messages should all be added to the same queue.
+      security:
+        - oauth_token: []
+      parameters:
+        - name: project_id
+          in: path
+          description: The project that the queue belong's to.
+          type: string
+          required: true
+        - name: queue_name
+          in: path
+          required: true
+          type: string
+          description: Name of the queue that the messages are being added to.
+        - name: messages
+          in: body
+          schema:
+            $ref: "#/definitions/MessagePostDataList"
+      responses:
+        201:
+          description: Messages successfully added to the queue. A list of idsare returned in the same order as they were sent.
+          schema:
+            $ref: "#/definitions/MessageIdList"
+        404:
+          description: There was an issue addding messages to the queue
+          schema:
+            $ref: "#/definitions/ResponseMessage"
+    delete:
+      operationId: deleteMessages
+      tags:
+        - IronMQ
+      description: Clear all messages from a queue or batch delete messages. This does not delete the queue.
+      security:
+        - oauth_token: []
+      parameters:
+        - name: project_id
+          in: path
+          description: The project that the queue belongs to.
+          required: true
+          type: string
+        - name: queue_name
+          in: path
+          description: Name of the queue.
+          type: string
+          required: true
+        - name: messages
+          in: body
+          description: >
+            A list of messages to be deleted. If the request is empty, all messages
+            on the queue will be removed.
+          schema:
+            $ref: "#/definitions/DeleteMsgList"
+      responses:
+        200:
+          description: Successfully cleared messages
+          schema:
+            $ref: "#/definitions/ResponseMessage"
+        404:
+          description: There was an error clearing the messages.
+  /{project_id}/queues/{queue_name}/messages/{message_id}:
+    get:
+      operationId: getMessageById
+      tags:
+        - IronMQ
+      description: Get the info on a particular message in a queue
+      security:
+        - oauth_token: []
+      parameters:
+        - name: project_id
+          in: path
+          description: The project that the queue belongs to.
+          required: true
+          type: string
+        - name: queue_name
+          in: path
+          description: The name of the queue.
+          type: string
+          required: true
+        - name: message_id
+          in: path
+          type: string
+          required: true
+          description: ID of the message
+      responses:
+        200:
+          description: Returns message info
+          schema:
+            $ref: "#/definitions/SingleMessage"
+        404:
+          description: Message does not exist
+          schema:
+            $ref: "#/definitions/ResponseMessage"
+    delete:
+      operationId: deleteMessageById
+      tags:
+        - IronMQ
+      description: Delete a message off the queue
+      security:
+        - oauth_token: []
+      parameters:
+        - name: project_id
+          in: path
+          description: The project that the queues belong to
+          type: string
+          required: true
+        - name: queue_name
+          in: path
+          description: Name of the queue
+          type: string
+          required: true
+        - name: message_id
+          in: path
+          type: string
+          required: true
+          description: ID of the message
+        - name: message
+          in: body
+          schema:
+            $ref: "#/definitions/DeleteMsg"
+      responses:
+        200:
+          description: Successfully deleted.
+          schema:
+            $ref: "#/definitions/ResponseMessage"
+        400:
+          description: There was an error deleting the queue.
+
+  /{project_id}/queues/{queue_name}/messages/{message_id}/release:
+    post:
+      operationId: releaseMessageById
+      tags:
+        - IronMQ
+      description: Places a reserved message back on the queue after a delay.
+      security:
+        - oauth_token: []
+      parameters:
+        - name: project_id
+          in: path
+          description: The project that the queues belong to
+          required: true
+          type: string
+        - name: queue_name
+          in: path
+          description: Name of the queue
+          type: string
+          required: true
+        - name: message_id
+          in: path
+          description: ID of the message
+          required: true
+          type: string
+        - name: message
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Release"
+      responses:
+        200:
+          description: Message successfully released
+          schema:
+            $ref: "#/definitions/ResponseMessage"
+        404:
+          description: There was an error dequeueing the message
+          schema:
+            $ref: "#/definitions/ResponseMessage"
+  /{project_id}/queues/{queue_name}/messages/{message_id}/touch:
+    post:
+      operationId: touchMessageById
+      tags:
+        - IronMQ
+      description: Creates a new reservation for a message.
+      security:
+        - oauth_token: []
+      parameters:
+        - name: project_id
+          in: path
+          description: The project that the queues belong to
+          required: true
+          type: string
+        - name: queue_name
+          in: path
+          description: Name of the queue
+          required: true
+          type: string
+        - name: message_id
+          in: path
+          description: ID of the message
+          type: string
+          required: true
+        - name: message
+          in: body
+          schema:
+            $ref: "#/definitions/Touch"
+      responses:
+        200:
+          description: Successfully created a new reservation.
+          schema:
+            $ref: "#/definitions/TouchResponse"
+  /{project_id}/queues/{queue_name}/messages/{message_id}/subscribers:
+    get:
+      operationId: getSubscriberStatusByMessageId
+      tags:
+        - IronMQ
+      description: Checks the push statuses across all subscribers for a message
+      security:
+        - oauth_token: []
+      parameters:
+      - name: project_id
+        in: path
+        description: The project that the queues belong to
+        required: true
+        type: string
+      - name: queue_name
+        in: path
+        description: Name of the queue
+        type: string
+        required: true
+      - name: message_id
+        in: path
+        type: string
+        description: ID of the message
+        required: true
+      responses:
+        200:
+          description: Returns the list of subscribers with their push statuses
+          schema:
+            $ref: "#/definitions/PushStatusList"
+        400:
+          description: There was an issue getting the statuses
+
+definitions:
+
+  ResponseMessage:
+    type: object
+    properties:
+      msg:
+        type: string
+  DeleteMsg:
+    type: object
+    properties:
+      id:
+        type: string
+      reservation_id:
+        type: string
+      subscriber_name:
+        type: string
+  DeleteMsgList:
+    type: object
+    properties:
+      ids:
+        type: array
+        items:
+          $ref: "#/definitions/DeleteMsg"
+
+  Message:
+    type: object
+    properties:
+      id:
+        type: string
+      body:
+        type: string
+      reservation_id:
+        type: string
+      reserved_count:
+        type: integer
+
+  # so for some reason, nesting a new item in an array throws an error. I'll look into this later, I don't like the idea
+  # of having a stupid amount of objects.
+  MessageList:
+    type: object
+    properties:
+      messages:
+        type: array
+        items:
+          $ref: "#/definitions/Message"
+  SingleMessage:
+    type: object
+    properties:
+      message:
+        $ref: "#/definitions/Message"
+  MessageIdList:
+    type: object
+    properties:
+      ids:
+        type: array
+        items:
+          type: string
+
+  MessagePostDataList:
+    type: object
+    properties:
+      messages:
+        type: array
+        items:
+          $ref: "#/definitions/MessagePostData"
+  MessagePostData:
+    type: object
+    properties:
+      delay:
+        type: integer
+      body:
+        type: string
+      push_headers:
+        type: object
+
+  QueueList:
+    type: object
+    properties:
+      queues:
+        type: array
+        items:
+          $ref: "#/definitions/QueueName"
+
+  QueueName:
+    type: object
+    properties:
+      name:
+        type: string
+
+  Subscriber:
+    type: object
+    required:
+      - name
+      - url
+    properties:
+      name:
+        type: string
+      url:
+        type: string
+      headers:
+        type: object
+
+  SubscriberList:
+    type: object
+    properties:
+      subscribers:
+        type: array
+        items:
+          $ref: "#/definitions/Subscriber"
+  ReservationRequest:
+    type: object
+    properties:
+      n:
+        type: integer
+        default: 1
+        maximum: 100
+        description: |
+          The maximum number of messages to get.
+          Note: You may not receive all n messages on every request, the more sparse the queue, the less likely you are to receive all n messages.
+      timeout:
+        type: integer
+        default: 30
+        maximum: 86400
+        description: |
+           After timeout (in seconds), item will be placed back onto queue. You must delete the message from the queue to ensure it does not go back onto the queue.
+      wait:
+        type: integer
+        description: |
+          Time to long poll for messages, in seconds.
+        default: 0
+        maximum: 30
+      delete:
+        type: boolean
+  Release:
+    type: object
+    properties:
+      reservation_id:
+        type: string
+      delay:
+        type: integer
+  Touch:
+    type: object
+    properties:
+      reservation_id:
+        type: string
+      timeout:
+        type: string
+        description: optional. How many seconds new reservation will be valid. Defaults to queue's message_timeout option
+  TouchResponse:
+    type: object
+    properties:
+      reservation_id:
+        type: string
+      msg:
+        type: string
+
+  ReservationResponse:
+    type: object
+    properties:
+      messages:
+        type: array
+        items:
+          $ref: "#/definitions/Message"
+  PushStatus:
+    type: object
+    properties:
+      subscriber_name:
+        type: string
+      retries_remaining:
+        type: integer
+      retries_total:
+        type: integer
+      status_code:
+        type: integer
+      msg:
+        type: string
+      url:
+        type: string
+      last_try_at:
+        type: string
+  PushStatusList:
+    type: object
+    properties:
+      subscribers:
+        type: array
+        items:
+          $ref: "#/definitions/PushStatus"
+
+  QueueInfo:
+    type: object
+    properties:
+      project_id:
+        type: string
+      name:
+        type: string
+        description: Name of the queue
+      message_timeout:
+        type: integer
+      message_expiration:
+        type: integer
+      consistency_factor:
+        type: string
+      replicase:
+        type: integer
+      type:
+        type: string
+        enum:
+          - multicast
+          - unicast
+          - pull
+        default: pull
+        description: >
+          Types can be [multicast, unicast, pull] where multicast and unicast define a push queue.
+          If a type isnt specified, it defaults to pull.
+          If the push field is defined, the queue will be crated as a push queue and must contain at least one subscriber.
+          Everything else in the push map is optional."
+      push:
+        $ref: "#/definitions/Push"
+      alerts:
+        type: array
+        items:
+          $ref: "#/definitions/Alert"
+
+# for some reason you can't compose models together yet
+# so this is QueueInfo + QueueStat
+  QueueDataResponse:
+    type: object
+    properties:
+      queue:
+        $ref: "#/definitions/QueueData"
+
+  QueueData:
+    type: object
+    properties:
+      project_id:
+        type: string
+      name:
+        type: string
+        description: Name of the queue
+      size:
+        type: integer
+      total_messages:
+        type: integer
+      total:
+        type: integer
+      message_timeout:
+        type: integer
+      message_expiration:
+        type: integer
+      consistency_factor:
+        type: string
+      replicas:
+        type: integer
+      type:
+        type: string
+        enum:
+          - multicast
+          - unicast
+          - pull
+        default: pull
+        description: >
+          Types can be [multicast, unicast, pull] where multicast and unicast define a push queue.
+          If a type isnt specified, it defaults to pull.
+          If the push field is defined, the queue will be crated as a push queue and must contain at least one subscriber.
+          Everything else in the push map is optional."
+      push:
+        $ref: "#/definitions/Push"
+      alerts:
+        type: array
+        items:
+          $ref: "#/definitions/Alert"
+  Alert:
+    type: object
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+      queue:
+        type: string
+      trigger:
+        type: integer
+      snooze:
+        type: integer
+      last_triggered_at:
+        type: integer
+
+  AlertList:
+    type: object
+    properties:
+      alerts:
+        type: array
+        items:
+          $ref: "#/definitions/Alert"
+  Push:
+    type: object
+    properties:
+      retries:
+        type: integer
+      retries_delay:
+        type: integer
+      error_queue:
+        type: string
+      rate_limit:
+        type: integer
+      subscribers:
+        type: array
+        items:
+          $ref: "#/definitions/QueueSubscriber"
+
+  QueueSubscriber:
+    type: object
+    properties:
+      name:
+        type: string
+      url:
+        type: string
+      header:
+        type: object
+
+  MessagesRequest:
+    type: object
+    properties:
+      n:
+        type: integer
+        description: >
+          "The maximum number of messages to peek."
+          "Note: You may not receive all n messages on every request, the more sparse the queue, the less likely you are to receive all n messages."
+        default: 1
+        maximum: 100
