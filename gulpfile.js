@@ -23,7 +23,7 @@ gulp.task('swagger:generate', function(done) {
   var executable = "./modules/swagger-codegen-cli/target/swagger-codegen-cli.jar"
   langs.forEach(function(lang) {
     var dest = "target/" + lang;
-    var command = util.format('java -jar %s generate -i %s -l %s -o %s', executable, apiFile, dest)
+    var command = util.format('java -jar %s generate -i %s -l %s -o %s', executable, apiFile, lang, dest)
     exec(command, function(error, stdout, stderr) {
       console.log("Writing " + lang + " to " + dest);
       if(error != null) {
