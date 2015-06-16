@@ -119,7 +119,7 @@ paths:
         201:
           description: Queue was successfully created.
           schema:
-            $ref: "#/definitions/QueueInfo"
+            $ref: "#/definitions/QueueInfoResponse"
 
     patch:
       operationId: updateQueue
@@ -148,7 +148,7 @@ paths:
         200:
           description: The queue has been successfully
           schema:
-            $ref: "#/definitions/QueueInfo"
+            $ref: "#/definitions/QueueInfoResponse"
         404:
           description: Error updating the queue. An error can be raised when you try to set subscribers or alerts on a pull queue
     delete:
@@ -220,7 +220,7 @@ paths:
       operationId: postWebhook
       tags:
         - IronMQ
-      description: Send a message to the webhook endpoint
+      description: Send a set of messages to the webhook endpoint.
       security:
         - oauth_token: []
       parameters:
@@ -234,6 +234,10 @@ paths:
           description: Name of the queue
           required: true
           type: string
+        - name: messages
+          in: body
+          schema:
+            $ref: "#/definitions/MessagePostDataList"
       responses:
         200:
           description: asdf
@@ -368,6 +372,8 @@ paths:
       responses:
         200:
           description: Successfully added an alert to the queue
+          schema:
+            $ref: "#/definitions/ResponseMessage"
     put:
       operationId: putAlerts
       tags:
@@ -394,6 +400,8 @@ paths:
       responses:
         200:
           description: Successfully replaced alerts
+          schema:
+            $ref: "#/definitions/ResponseMessage"
     delete:
       operationId: deleteAlerts
       tags:
@@ -420,6 +428,8 @@ paths:
       responses:
         200:
           description: Successfully removed alerts
+          schema:
+            $ref: "#/definitions/ResponseMessage"
         404:
           description: Error removing the queue.
   /{project_id}/queues/{queue_name}/alerts/{alert_id}:
@@ -449,8 +459,13 @@ paths:
       responses:
         200:
           description: Successfully deleted
+          schema:
+            $ref: "#/definitions/ResponseMessage"
+
         404:
           description: There was an issue deleting the alert.
+          schema:
+            $ref: "#/definitions/ResponseMessage"
 
   /{project_id}/queues/{queue_name}/messages:
     get:
@@ -471,10 +486,12 @@ paths:
           required: true
           type: string
           description: The name of the queue that you want to peek from
-        - name: options
-          in: body
-          schema:
-            $ref: "#/definitions/MessagesRequest"
+        - name: n
+          in: query
+          required: false
+          default: 1
+          type: integer
+          description: The amount of messages you want to peek, defaults to 1
       responses:
         200:
           description: Successfully peeked off the queue. Some fields will not be included if they are not applicable like push if it's not a push queue and alerts if there are no alerts.
@@ -483,7 +500,7 @@ paths:
         404:
           description: There was an error peeking off the queue
     post:
-      operationId: addMessages
+      operationId: postMessages
       tags:
         - IronMQ
       description: Add a set of messages to a single queue. Multiple messages may be added in a single request, provided that the messages should all be added to the same queue.
@@ -637,7 +654,7 @@ paths:
           description: ID of the message
           required: true
           type: string
-        - name: message
+        - name: body
           in: body
           required: true
           schema:
@@ -939,6 +956,11 @@ definitions:
         items:
           $ref: "#/definitions/Alert"
 
+  QueueInfoResponse:
+    type: object
+    properties:
+      queue:
+        $ref: "#/definitions/QueueInfo"
 # for some reason you can't compose models together yet
 # so this is QueueInfo + QueueStat
   QueueDataResponse:
