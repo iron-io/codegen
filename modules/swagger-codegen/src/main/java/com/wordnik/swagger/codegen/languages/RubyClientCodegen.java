@@ -73,7 +73,6 @@ public class RubyClientCodegen extends DefaultCodegen implements CodegenConfig {
     String swaggerFolder = baseFolder + File.separatorChar + "swagger";
     String modelFolder = baseFolder + File.separatorChar + "models";
 
-    SupportingFile.add(new SupportingFile("readme.mustache", "", "README.md"));
     supportingFiles.add(new SupportingFile("swagger_client.gemspec.mustache", "", gemName + ".gemspec"));
     supportingFiles.add(new SupportingFile("swagger_client.mustache", "lib", gemName + ".rb"));
     supportingFiles.add(new SupportingFile("monkey.mustache", baseFolder, "monkey.rb"));
@@ -84,6 +83,7 @@ public class RubyClientCodegen extends DefaultCodegen implements CodegenConfig {
     supportingFiles.add(new SupportingFile("swagger" + File.separatorChar + "configuration.mustache", swaggerFolder, "configuration.rb"));
     supportingFiles.add(new SupportingFile("base_object.mustache", modelFolder, "base_object.rb"));
 
+    supportingFiles.add(new SupportingFile("readme.mustache", "", "README.md"));
     supportingFiles.add(new SupportingFile("spec_helper.mustache", "spec" , "spec_helper.rb"));
     supportingFiles.add(new SupportingFile("iron_mq_api_spec.rb", "spec" , "iron_mq_api_spec.rb"));
   }
