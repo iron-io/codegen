@@ -11,13 +11,15 @@ Anytime a change is made to swagger-codegen, you need to delete ```modules/swagg
 
 ### Generate lib for a single language
 
+Available languages: [android, async-scala, csharp, java, jaxrs, nodejs, objc, perl, php, python, python3, qt5cpp, retrofit, ruby, scala, scalatra, spring-mvc, dynamic-html, html, swagger, swagger-yaml, swift, tizen, akka-scala]
+
 If you want to build an individual language, run
 
 ```
 java -jar modules/swagger-codegen-cli/target/swagger-codegen-cli.jar generate \
   -i ironmqV3.json \
-  -l csharp \
-  -o target/csharp
+  -l LANG\
+  -o target/LANG
 ```
 
 This is a fork of [swagger-codegen](https://github.com/swagger-api/swagger-codegen)
