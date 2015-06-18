@@ -9,6 +9,7 @@ var exec = require('child_process').exec;
 var yaml = require('js-yaml');
 
 var apiFile = "ironmqV3.json"
+var executable = "./modules/swagger-codegen-cli/target/swagger-codegen-cli.jar"
 
 gulp.task('yaml:convert', function(done) {
   var text = fs.readFileSync('ironmqV3.yml', "utf-8")
@@ -17,10 +18,18 @@ gulp.task('yaml:convert', function(done) {
   fs.writeFileSync('ironmqV3.json', JSON.stringify(data), "UTF-8");
 });
 
+gulp.task('rebuild', function(done) {
+  var command = "rm " + executable + "; mvn package -DskipTests";
+  exec(command, function(error, stdout, stderr) {
+    console.log(stdout);
+    console.log(stderr);
+  })
+});
+
+
 // Uses swagger-codegen-cli to autogenerate the code
 gulp.task('swagger:generate', function(done) {
   var langs = ['ruby', 'python', 'java', 'php']
-  var executable = "./modules/swagger-codegen-cli/target/swagger-codegen-cli.jar"
   langs.forEach(function(lang) {
     var dest = "target/" + lang;
     var command = util.format('java -jar %s generate -i %s -l %s -o %s', executable, apiFile, lang, dest)
