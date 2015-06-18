@@ -9,7 +9,7 @@ def get_api_key_with_prefix(key):
     if api_key.get(key) and api_key_prefix.get(key):
       return api_key_prefix[key] + ' ' + api_key[key]
     elif api_key.get(key):
-      return api_key[key]
+      return "OAuth " + api_key[key]
 
 def get_basic_auth_token():
     global username
@@ -23,7 +23,7 @@ def auth_settings():
                    'type': 'api_key',
                    'in': {{#isKeyInHeader}}'header'{{/isKeyInHeader}}{{#isKeyInQuery}}'query'{{/isKeyInQuery}},
                    'key': '{{keyParamName}}',
-                   'value': get_api_key_with_prefix('{{keyParamName}}')
+                   'value': get_api_key_with_prefix('{{name}}')
                },
              {{/isApiKey}}{{#isBasic}}
                '{{name}}': {
@@ -40,12 +40,10 @@ host = "{{basePath}}"
 
 # Default api client
 api_client = None
-             
+
 # Authentication settings
 
 api_key = {}
 api_key_prefix = {}
 username = ''
 password = ''
-
-
