@@ -7,7 +7,7 @@ import java.io.File;
 import java.util.*;
 
 public class PythonClientCodegen extends DefaultCodegen implements CodegenConfig {
-  protected String module = "iron";
+  protected String module = "iron_client";
   protected String invokerPackage;
   protected String eggPackage;
 
