@@ -3,8 +3,17 @@ require "uri"
 module {{moduleName}}
 {{#operations}}
   class {{classname}}
+    attr_accessor :token, :host
     basePath = "{{basePath}}"
-    # apiInvoker = APIInvoker
+
+    def initialize(token, host=nil)
+      @token = token
+      if host.nil?
+        @host = '{{host}}'
+      else
+        @host = host
+      end
+    end
 {{#operation}}
 {{newline}}
     # {{summary}}
@@ -13,7 +22,7 @@ module {{moduleName}}
 {{/required}}{{/allParams}}    # @param [Hash] opts the optional parameters
 {{#allParams}}{{^required}}    # @option opts [{{dataType}}] :{{paramName}} {{description}}
 {{/required}}{{/allParams}}    # @return [{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}nil{{/returnType}}]
-    def self.{{nickname}}({{#allParams}}{{#required}}{{paramName}}, {{/required}}{{/allParams}}opts = {})
+    def {{nickname}}({{#allParams}}{{#required}}{{paramName}}, {{/required}}{{/allParams}}opts = {})
       {{#allParams}}{{#required}}
       # verify the required parameter '{{paramName}}' is set
       raise "Missing the required parameter '{{paramName}}' when calling {{nickname}}" if {{{paramName}}}.nil?
@@ -49,9 +58,8 @@ module {{moduleName}}
       {{^bodyParam}}post_body = nil
       {{/bodyParam}}{{#bodyParam}}post_body = Swagger::Request.object_to_http_body({{#required}}{{{paramName}}}{{/required}}{{^required}}opts{{/required}})
       {{/bodyParam}}
-
       auth_names = [{{#authMethods}}'{{name}}'{{#hasMore}}, {{/hasMore}}{{/authMethods}}]
-      {{#returnType}}response = Swagger::Request.new(:{{httpMethod}}, path, {:params => query_params, :headers => header_params, :form_params => form_params, :body => post_body, :auth_names => auth_names}).make.body
+      {{#returnType}}response = Swagger::Request.new(:{{httpMethod}}, path, @host, {:params => query_params, :headers => header_params, :form_params => form_params, :body => post_body, :token => token}).make.body
       {{#returnContainer}}response.map {|response| {{/returnContainer}}obj = {{returnBaseType}}.new() and obj.build_from_hash(response){{#returnContainer}} }{{/returnContainer}}{{/returnType}}{{^returnType}}Swagger::Request.new(:{{httpMethod}}, path, {:params => query_params,:headers => header_params, :form_params => form_params, :body => post_body, :auth_names => auth_names}).make
       nil{{/returnType}}
     end

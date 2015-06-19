@@ -5,11 +5,11 @@ module {{moduleName}}
       require 'addressable/uri'
       require 'typhoeus'
 
-      attr_accessor :host, :path, :format, :params, :body, :http_method, :headers, :form_params, :auth_names
+      attr_accessor :host, :path, :format, :params, :body, :http_method, :headers, :form_params, :token
 
       # All requests must have an HTTP method and a path
       # Optionals parameters are :params, :headers, :body, :format, :host
-      def initialize(http_method, path, attributes={})
+      def initialize(http_method, path, host, attributes={})
         attributes[:format] ||= Swagger.configuration.format
         attributes[:params] ||= {}
 
@@ -23,10 +23,11 @@ module {{moduleName}}
         attributes[:headers] = default_headers.merge(attributes[:headers] || {})
 
         # Because we use "oauth" we have to add the OAuth key in front of it
-        attributes[:headers].merge!({:Authorization => "OAuth " + Swagger.configuration.auth_token})
+        attributes[:headers].merge!({:Authorization => "OAuth " + attributes[:token]})
 
         self.http_method = http_method.to_sym
         self.path = path
+        @host = host
         attributes.each do |name, value|
           send("#{name.to_s.underscore.to_sym}=", value)
         end
@@ -62,7 +63,7 @@ module {{moduleName}}
       def url(options = {})
         u = Addressable::URI.new(
           :scheme => Swagger.configuration.scheme,
-          :host => Swagger.configuration.host,
+          :host => @host,
           :path => self.interpreted_path,
           :query => self.query_string.sub(/\?/, '')
         ).to_s
