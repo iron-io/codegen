@@ -8,7 +8,7 @@ import java.util.*;
 import java.io.File;
 
 public class RubyClientCodegen extends DefaultCodegen implements CodegenConfig {
-  protected String gemName = "iron_client";
+  protected String gemName = "iron_sdk";
   protected String moduleName = null;
   protected String libFolder = "lib";
 
