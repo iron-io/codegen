@@ -166,6 +166,9 @@ public class DefaultGenerator extends AbstractGenerator implements Generator {
         operation.put("classname", config.toApiName(tag));
         operation.put("classVarName", config.toApiVarName(tag));
         operation.put("importPath", config.toApiImport(tag));
+        if (swagger.getHost() != null) {
+          operation.put("host", swagger.getHost());
+        }
 
         processMimeTypes(swagger.getConsumes(), operation, "consumes");
         processMimeTypes(swagger.getProduces(), operation, "produces");
