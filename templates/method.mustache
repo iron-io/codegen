@@ -7,7 +7,7 @@
 {{/parameters}}
  *
  */
- {{&className}}.prototype.{{&methodName}} = function(parameters){
+ {{&className}}.prototype.{{&methodName}} = function({{#parameters}}{{#isPathParameter}}{{&camelCaseName}}, {{/isPathParameter}}{{/parameters}}parameters){
     if(parameters === undefined) {
         parameters = {};
     }
@@ -30,9 +30,7 @@
             headers['Authorization'] = 'OAuth ' + this.token.value;
         }
     {{/isSecure}}
-
     {{#parameters}}
-
         {{#isQueryParameter}}
             {{#isSingleton}}
                 queryParameters['{{&name}}'] = '{{&singleton}}';
@@ -54,7 +52,7 @@
         {{/isQueryParameter}}
 
         {{#isPathParameter}}
-            path = path.replace('{{=<% %>=}}{<%&name%>}<%={{ }}=%>', parameters['{{&camelCaseName}}']);
+            path = path.replace('{{=<% %>=}}{<%&name%>}<%={{ }}=%>', {{&camelCaseName}});
         {{/isPathParameter}}
 
         {{#isHeaderParameter}}
@@ -69,8 +67,8 @@
         {{/isHeaderParameter}}
 
         {{#isBodyParameter}}
-            if(parameters['{{&camelCaseName}}'] !== undefined){
-                body = JSON.stringify(parameters['{{&camelCaseName}}']);
+            if(parameters !== undefined){
+                body = JSON.stringify(parameters);
             }
             headers['Content-Type'] = 'application/json';
         {{/isBodyParameter}}
@@ -87,10 +85,12 @@
         {{/isFormParameter}}
 
         {{#required}}
-        if(parameters['{{&camelCaseName}}'] === undefined){
+        {{#isPathParameter}}
+        if({{&camelCaseName}} === undefined){
             deferred.reject(new Error('Missing required {{&paramType}} parameter: {{&camelCaseName}}'));
             return deferred.promise;
         }
+        {{/isPathParameter}}
         {{/required}}
 
     {{/parameters}}
@@ -102,7 +102,6 @@
             queryParameters[parameterName] = parameter;
         });
     }
-
     {{> request}}
 
     return deferred.promise;
