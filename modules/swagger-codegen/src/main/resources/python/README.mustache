@@ -1,6 +1,7 @@
-## Requirements.
+# Requirements.
 Python 2.7 and later.
 
+# Howto
 ## Setuptools
 You can install the bindings via [Setuptools](http://pypi.python.org/pypi/setuptools).
 
@@ -8,67 +9,42 @@ You can install the bindings via [Setuptools](http://pypi.python.org/pypi/setupt
 python setup.py install
 ```
 
-Or you can install from Github via pip:
-
-```sh
-pip install git+https://github.com/geekerzp/SwaggerPetstore-python.git
+```python
+import iron_sdk
 ```
 
-To use the bindings, import the pacakge:
+### IronMQ
 
 ```python
-import SwaggerPetstore
+mq = iron_sdk.IronMQApi('TOKEN')
+
+# or if you wish to use a different host.
+mq = iron_sdk.IronMQApi('TOKEN', host='HOST_URL')
 ```
 
-## Manual Installation
-If you do not wish to use setuptools, you can download the latest release.
-Then, to use the bindings, import the package:
-
+#### Get the list of queues for a project
 ```python
-import path.to.SwaggerPetstore-python.SwaggerPetstore
+res = mq.get_queues("PROJECT_ID")
+for q in res.queues:
+  print q.name
 ```
 
-## Getting Started
-
-TODO
-
-## Documentation
-
-TODO
-
-## Tests
-
-(Make sure you are running it inside of a [virtualenv](http://docs.python-guide.org/en/latest/dev/virtualenvs/))
-
-You can run the tests in the current python platform:
-
-```sh
-$ make test
-[... magically installs dependencies and runs tests on your virtualenv]
-Ran 7 tests in 19.289s
-
-OK
+#### Push messages to a queue
+```python
+messages = {'messages':[
+              {'body': 'this is a message'},
+              {'body': 'this is another message'}
+           ]}
+res = mq.post_messages("PROJECT_ID", "QUEUE_NAME", messages)
+# Returns the ids of the posted messagess
+message_ids = res.ids
 ```
-or
+#### Reserve messages
+```python
+messages = mq.reserve_messages("PROJECT_ID", "QUEUE_NAME", {'n': 50}).messages
+for m in messages:
+  print m.body
 
+# Now we can delete them
+mq.delete_messages("PROJECT_ID", "QUEUE_NAME", messages)
 ```
-$ mvn integration-test -rf :PythonPetstoreClientTests
-Using 2195432783 as seed
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD SUCCESS
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time: 37.594 s
-[INFO] Finished at: 2015-05-16T18:00:35+08:00
-[INFO] Final Memory: 11M/156M
-[INFO] ------------------------------------------------------------------------
-```
-If you want to run the tests in all the python platforms:
-
-```sh
-$ make test-all
-[... tox creates a virtualenv for every platform and runs tests inside of each]
-  py27: commands succeeded
-  py34: commands succeeded
-  congratulations :)
-```
-

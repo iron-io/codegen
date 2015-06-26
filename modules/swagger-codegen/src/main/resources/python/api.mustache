@@ -27,19 +27,13 @@ import os
 # python 2 and python 3 compatibility library
 from six import iteritems
 
-from .. import configuration
 from ..api_client import ApiClient
 
 {{#operations}}
 class {{classname}}(object):
 
-    def __init__(self, api_client=None):
-        if api_client:
-            self.api_client = api_client
-        else:
-            if not configuration.api_client:
-                configuration.api_client = ApiClient('{{basePath}}')
-            self.api_client = configuration.api_client
+    def __init__(self, token, host="{{basePath}}"):
+        self.api_client = ApiClient(token, host=host)
 
     {{#operation}}
     def {{nickname}}(self, {{#allParams}}{{#required}}{{paramName}}, {{/required}}{{/allParams}}opts={}):
