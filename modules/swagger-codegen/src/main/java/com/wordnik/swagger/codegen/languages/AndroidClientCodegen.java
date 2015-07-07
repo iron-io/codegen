@@ -7,9 +7,9 @@ import java.util.*;
 import java.io.File;
 
 public class AndroidClientCodegen extends DefaultCodegen implements CodegenConfig {
-  protected String invokerPackage = "io.swagger.client";
-  protected String groupId = "io.swagger";
-  protected String artifactId = "swagger-android-client";
+  protected String invokerPackage = "io.iron.sdk";
+  protected String groupId = "io.iron";
+  protected String artifactId = "iron-sdk";
   protected String artifactVersion = "1.0.0";
   protected String projectFolder = "src/main";
   protected String sourceFolder = projectFolder + "/java";
@@ -33,8 +33,8 @@ public class AndroidClientCodegen extends DefaultCodegen implements CodegenConfi
     modelTemplateFiles.put("model.mustache", ".java");
     apiTemplateFiles.put("api.mustache", ".java");
     templateDir = "android-java";
-    apiPackage = "io.swagger.client.api";
-    modelPackage = "io.swagger.client.model";
+    apiPackage = "io.iron.sdk.api";
+    modelPackage = "io.iron.sdk.model";
 
     reservedWords = new HashSet<String> (
       Arrays.asList(
