@@ -19,7 +19,8 @@ import java.io.File;
 
 {{#operations}}
 public class {{classname}} {
-  String basePath = "{{basePath}}";
+  private String basePath = "";
+  private String token = "";
   ApiInvoker apiInvoker = ApiInvoker.getInstance();
 
   public void addHeader(String key, String value) {
@@ -37,6 +38,19 @@ public class {{classname}} {
   public String getBasePath() {
     return basePath;
   }
+
+  public void setAuth(Map<String, String> headers) {
+    headers.put("Authorization", "OAuth " + this.token);
+  }
+
+  public {{classname}}(String token, String host) {
+    this.token = token;
+    this.basePath = host;
+  }
+  public {{classname}}(String token) {
+    this(token, "{{basePath}}");
+  }
+
 
   {{#operation}}
   /**
@@ -70,6 +84,9 @@ public class {{classname}} {
 
     {{#headerParams}}headerParams.put("{{baseName}}", ApiInvoker.parameterToString({{paramName}}));
     {{/headerParams}}
+
+    // Apply auth to headers
+    setAuth(headerParams);
 
     String[] contentTypes = {
       {{#consumes}}"{{mediaType}}"{{#hasMore}},{{/hasMore}}{{/consumes}}
