@@ -345,128 +345,7 @@ paths:
           description: Error removing subscribers
           schema:
             $ref: "#/definitions/ResponseMessage"
-  /{project_id}/queues/{queue_name}/alerts:
-    post:
-      operationId: addAlert
-      tags:
-        - IronMQ
-      description: Add an alert to a queue. Only available for pull queues.
-      security:
-        - oauth_token: []
-      parameters:
-        - name: project_id
-          in: path
-          description: The project that the queues belong to
-          required: true
-          type: string
-        - name: queue_name
-          in: path
-          description: Name of the pull queue
-          type: string
-          required: true
-        - name: alerts
-          in: body
-          description: Set of alerts
-          schema:
-            $ref: "#/definitions/AlertList"
-      responses:
-        200:
-          description: Successfully added an alert to the queue
-          schema:
-            $ref: "#/definitions/ResponseMessage"
-    put:
-      operationId: putAlerts
-      tags:
-        - IronMQ
-      description: Replaces the existing alerts with a new list. Only available for pull queues.
-      security:
-        - oauth_token: []
-      parameters:
-        - name: project_id
-          in: path
-          description: The project that the queues belong to
-          required: true
-          type: string
-        - name: queue_name
-          in: path
-          description: Name of the pull queue
-          type: string
-          required: true
-        - name: alerts
-          in: body
-          description: Set of alerts
-          schema:
-            $ref: "#/definitions/AlertList"
-      responses:
-        200:
-          description: Successfully replaced alerts
-          schema:
-            $ref: "#/definitions/ResponseMessage"
-    delete:
-      operationId: deleteAlerts
-      tags:
-        - IronMQ
-      description: Delete a batch of alerts from a queue. Only available for pull queues.
-      security:
-        - oauth_token: []
-      parameters:
-        - name: project_id
-          in: path
-          description: The project that the queues belong to
-          required: true
-          type: string
-        - name: queue_name
-          in: path
-          description: Name of the pull queue
-          type: string
-          required: true
-        - name: alerts
-          in: body
-          description: Set of alert IDs to be deleted
-          schema:
-            $ref: "#/definitions/AlertList"
-      responses:
-        200:
-          description: Successfully removed alerts
-          schema:
-            $ref: "#/definitions/ResponseMessage"
-        404:
-          description: Error removing the queue.
-  /{project_id}/queues/{queue_name}/alerts/{alert_id}:
-    delete:
-      operationId: deleteAlertById
-      tags:
-        - IronMQ
-      description: Delete a single alert from a queue using its ID. Only available for pull queues.
-      security:
-        - oauth_token: []
-      parameters:
-        - name: project_id
-          in: path
-          description: The project that the pull queue belongs to.
-          required: true
-          type: string
-        - name: queue_name
-          in: path
-          description: The name of the pull queue
-          type: string
-          required: true
-        - name: alert_id
-          in: path
-          description: ID of the alert to be deleted
-          type: string
-          required: true
-      responses:
-        200:
-          description: Successfully deleted
-          schema:
-            $ref: "#/definitions/ResponseMessage"
-
-        404:
-          description: There was an issue deleting the alert.
-          schema:
-            $ref: "#/definitions/ResponseMessage"
-
+						
   /{project_id}/queues/{queue_name}/messages:
     get:
       operationId: getMessages
@@ -935,7 +814,7 @@ definitions:
         type: integer
       consistency_factor:
         type: string
-      replicase:
+      replicas:
         type: integer
       type:
         type: string
