@@ -250,8 +250,8 @@ public class ApiInvoker {
       }
       else if ("POST".equals(method)) {
         HttpPost post = new HttpPost(url);
+				post.setHeader("Content-Type", contentType);
         if (formParamStr != null) {
-          post.setHeader("Content-Type", contentType);
           post.setEntity(new StringEntity(formParamStr, "UTF-8"));
         } else if (body != null) {
           if (body instanceof HttpEntity) {
@@ -269,11 +269,10 @@ public class ApiInvoker {
       }
       else if ("PUT".equals(method)) {
         HttpPut put = new HttpPut(url);
-        if (formParamStr != null) {
-          put.setHeader("Content-Type", contentType);
+        put.setHeader("Content-Type", contentType);
+				if (formParamStr != null) {
           put.setEntity(new StringEntity(formParamStr, "UTF-8"));
         } else if (body != null) {
-          put.setHeader("Content-Type", contentType);
           put.setEntity(new StringEntity(serialize(body), "UTF-8"));
         }
         for(String key : headers.keySet()) {
