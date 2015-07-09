@@ -124,7 +124,6 @@ public class AndroidClientCodegen extends DefaultCodegen implements CodegenConfi
 
     // camelize (lower first character) the variable name
     // pet_id => petId
-    name = camelize(name, true);
 
     // for reserved word or word starting with number, append _
     if(reservedWords.contains(name) || name.matches("^\\d.*"))
